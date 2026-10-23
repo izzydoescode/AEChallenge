@@ -2,7 +2,6 @@
 
 A small React SSR app with Fastify, esbuild, and a custom caching fetch library.
 
----
 
 ## Table of Contents
 
@@ -13,7 +12,7 @@ A small React SSR app with Fastify, esbuild, and a custom caching fetch library.
 - [Things to improve / Known issues](#things-to-improve--known-issues)
 - [Future Enhancements & Next Steps](#future-enhancements--next-steps)
 
----
+
 
 ## Getting Started
 
