@@ -8,6 +8,10 @@
     "build:server": "rm -rf dist && mkdir dist && cp ./framework/mock-server/mockServiceWorker.js dist/ && esbuild ./framework/server/index.js --bundle --minify --platform=node --outfile=dist/server.js",
     "build:client": "esbuild ./framework/client/index.js --bundle --minify --platform=browser --outfile=dist/client.js",
     "start": "npm run build && node dist/server.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -18,7 +22,11 @@
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
     "esbuild": "^0.21.3",
+    "eslint": "^9.39.5",
+    "eslint-plugin-react": "^7.37.5",
+    "prettier": "^3.9.10",
     "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.0",
     "vitest": "^4.1.12"
   },
   "dependencies": {
