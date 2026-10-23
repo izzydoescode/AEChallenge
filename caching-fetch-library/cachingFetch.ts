@@ -3,11 +3,17 @@
 // However, you must not change the surface API presented from this file,
 // and you should not need to change any other files in the project to complete the challenge
 
+import { useState, useEffect } from 'react';
+
 type UseCachingFetch = (url: string) => {
   isLoading: boolean;
   data: unknown;
   error: Error | null;
 };
+
+// memory cache and in-flight request tracker to prevent duplicate calls
+const cache = new Map<string, unknown>();
+const activeRequests = new Map<string, Promise<unknown>>();
 
 /**
  * 1. Implement a caching fetch hook. The hook should return an object with the following properties:
@@ -28,13 +34,52 @@ type UseCachingFetch = (url: string) => {
  *
  */
 export const useCachingFetch: UseCachingFetch = (url) => {
-  return {
-    data: null,
-    isLoading: false,
-    error: new Error(
-      'UseCachingFetch has not been implemented, please read the instructions in DevTask.md',
-    ),
-  };
+  const [data, setData] = useState<unknown>(cache.get(url) ?? null);
+  const [isLoading, setIsLoading] = useState<boolean>(!cache.has(url));
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    if (cache.has(url)) {
+      setData(cache.get(url));
+      setIsLoading(false);
+      return;
+    }
+
+    let isMounted = true;
+
+    // reuse ongoing fetch or start a new one
+    const req =
+      activeRequests.get(url) ||
+      fetch(url)
+        .then((res) => res.json())
+        .then((json) => {
+          cache.set(url, json);
+          return json;
+        })
+        .finally(() => {
+          activeRequests.delete(url);
+        });
+
+    activeRequests.set(url, req);
+
+    req
+      .then((json) => {
+        if (!isMounted) return;
+        setData(json);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        if (!isMounted) return;
+        setError(err instanceof Error ? err : new Error(String(err)));
+        setIsLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [url]);
+
+  return { isLoading, data, error };
 };
 
 /**
@@ -52,9 +97,11 @@ export const useCachingFetch: UseCachingFetch = (url) => {
  *
  */
 export const preloadCachingFetch = async (url: string): Promise<void> => {
-  throw new Error(
-    'preloadCachingFetch has not been implemented, please read the instructions in DevTask.md',
-  );
+  if (cache.has(url)) return;
+
+  const res = await fetch(url);
+  const json = await res.json();
+  cache.set(url, json);
 };
 
 /**
@@ -73,8 +120,22 @@ export const preloadCachingFetch = async (url: string): Promise<void> => {
  * 4. This file passes a type-check.
  *
  */
-export const serializeCache = (): string => '';
+export const serializeCache = (): string => {
+  return JSON.stringify(Object.fromEntries(cache));
+};
 
-export const initializeCache = (serializedCache: string): void => {};
+export const initializeCache = (serializedCache: string): void => {
+  try {
+    const parsed = JSON.parse(serializedCache) as Record<string, unknown>;
+    for (const [key, val] of Object.entries(parsed)) {
+      cache.set(key, val);
+    }
+  } catch {
+    // ignore parse error if empty string was passed
+  }
+};
 
-export const wipeCache = (): void => {};
+export const wipeCache = (): void => {
+  cache.clear();
+  activeRequests.clear();
+};
