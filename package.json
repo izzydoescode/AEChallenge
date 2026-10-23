@@ -1,5 +1,5 @@
 {
-  "name": "challenge",
+  "name": "AEchallenge",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,7 +8,8 @@
     "build:server": "rm -rf dist && mkdir dist && cp ./framework/mock-server/mockServiceWorker.js dist/ && esbuild ./framework/server/index.js --bundle --minify --platform=node --outfile=dist/server.js",
     "build:client": "esbuild ./framework/client/index.js --bundle --minify --platform=browser --outfile=dist/client.js",
     "start": "npm run build && node dist/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "author": "",
   "license": "ISC",
@@ -16,7 +17,9 @@
     "@types/node": "^20.12.12",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
-    "esbuild": "^0.21.3"
+    "esbuild": "^0.21.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.12"
   },
   "dependencies": {
     "fastify": "^4.27.0",
