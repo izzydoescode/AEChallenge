@@ -1,0 +1,38 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+
+# Editor-based HTTP Client requests
+/httpRequests/
+
+# Build/dist
+.DS_Store
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.*.local
